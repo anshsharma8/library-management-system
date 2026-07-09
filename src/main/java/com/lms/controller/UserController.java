@@ -1,5 +1,7 @@
 package com.lms.controller;
 
+import com.lms.dto.LoginRequestDto;
+import com.lms.dto.LoginResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,13 +28,14 @@ public class UserController {
 		@Autowired
 		UserService userService;
 
-		@PostMapping("{addressId}")
+
+		@PostMapping("/{addressId}")
 		public ResponseEntity<ApiResponse<User>> registerUser(@RequestBody UserDto userDto,@PathVariable int addressId) {
 
 			return userService.registerUser(userDto, addressId);
 		}
 
-		@GetMapping("{userId}")
+		@GetMapping("/{userId}")
 		public ResponseEntity<ApiResponse<User>> findUserById(
 				@PathVariable int userId) {
 
@@ -53,7 +56,7 @@ public class UserController {
 			return userService.updateUserPartially(userDto,userId);
 		}
 
-		@DeleteMapping("{userId}")
+		@DeleteMapping("/{userId}")
 		public ResponseEntity<ApiResponse<User>> deleteUserById(
 				@PathVariable int userId) {
 
@@ -79,6 +82,12 @@ public class UserController {
 		public ResponseEntity<ApiResponse<User>> returnBook(@PathVariable int bookId) {
 
 			return userService.returnBook(bookId);
+		}
+
+		@PostMapping("/login")
+	    public ResponseEntity<ApiResponse<LoginResponseDto>> login(@RequestBody LoginRequestDto loginRequestDto)
+		{
+           return userService.login(loginRequestDto);
 		}
 	}
 

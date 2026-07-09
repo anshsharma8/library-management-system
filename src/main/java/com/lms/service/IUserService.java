@@ -2,9 +2,10 @@ package com.lms.service;
 
 import java.util.List;
 
+import com.lms.dto.LoginRequestDto;
+import com.lms.dto.LoginResponseDto;
 import org.springframework.http.ResponseEntity;
 import com.lms.dto.UserDto;
-import com.lms.entity.Book;
 import com.lms.entity.User;
 import com.lms.util.ApiResponse;
 
@@ -17,7 +18,7 @@ public interface IUserService {
 	public ResponseEntity<ApiResponse<List<User>>> findAllUser();
 	public ResponseEntity<ApiResponse<User>> borrowBookByUser(int userId,int bookId);
 	public ResponseEntity<ApiResponse<User>> returnBook(int bookId);
-
+    public ResponseEntity<ApiResponse<LoginResponseDto>> login(LoginRequestDto loginRequestDto);
 
 	
 	

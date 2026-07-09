@@ -1,15 +1,21 @@
 package com.lms.serviceimplementation;
 
+import com.lms.dto.LoginRequestDto;
+import com.lms.dto.LoginResponseDto;
 import com.lms.repository.BookRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import com.lms.security.JwtUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -48,6 +54,13 @@ public class UserService implements IUserService, UserDetailsService {
 
 	@Autowired
 	BookRepository bookRepository;
+
+	@Lazy
+	@Autowired
+	AuthenticationManager authenticationManager;
+
+	@Autowired
+	JwtUtil jwtUtil;
 
 	@Override
 	public ResponseEntity<ApiResponse<User>> registerUser(UserDto userDto, int addressId) {
@@ -252,6 +265,33 @@ public class UserService implements IUserService, UserDetailsService {
 	           throw new BookIdNotFoundException("Book For This Id Not Found");
 			 
 		 }
+	}
+
+	@Override
+	public ResponseEntity<ApiResponse<LoginResponseDto>> login(LoginRequestDto loginRequestDto) {
+
+		// Step 1 — verify credentials
+		authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(),loginRequestDto.getPassword()));
+
+		// Step 2 — get user from DB
+		Optional<User> optionalUser = userRepository.findByEmail(loginRequestDto.getEmail());
+
+		if (optionalUser.isEmpty())
+		{
+			throw new UsernameNotFoundException("User Not Found");
+		}
+
+		User user= optionalUser.get();
+        // step 3 token generation.
+		String token= jwtUtil.generateToken(user.getEmail(), user.getRole(),user.getUserId());
+
+		ApiResponse<LoginResponseDto> apiResponse = new ApiResponse<>();
+		apiResponse.setData(new LoginResponseDto(token));
+		apiResponse.setMessage("Login Successful");
+		apiResponse.setStatusCode(HttpStatus.OK.value());
+
+		return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
 	}
 
 
