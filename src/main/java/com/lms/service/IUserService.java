@@ -8,10 +8,11 @@ import org.springframework.http.ResponseEntity;
 import com.lms.dto.UserDto;
 import com.lms.entity.User;
 import com.lms.util.ApiResponse;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public interface IUserService {
 	public ResponseEntity<ApiResponse<User>> registerUser(UserDto userDto,int addressId);
-	public ResponseEntity<ApiResponse<User>> findUserById(int userId);
+	public ResponseEntity<ApiResponse<User>> findUserById(int userId, UserDetails userDetails);
 	public ResponseEntity<ApiResponse<User>>updateUserComplete(UserDto userDto);
 	public ResponseEntity<ApiResponse<User>>updateUserPartially(UserDto userDto,int userId);
 	public ResponseEntity<ApiResponse<User>>deleteUserById(int userId);

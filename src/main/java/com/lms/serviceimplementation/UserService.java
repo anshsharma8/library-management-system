@@ -14,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -97,27 +99,44 @@ public class UserService implements IUserService, UserDetailsService {
 	}
 
 	@Override
-	public ResponseEntity<ApiResponse<User>> findUserById(int userId) {
+	public ResponseEntity<ApiResponse<User>> findUserById(int userId, UserDetails userDetails) {
 
-		Optional<User> optional = userRepository.findById(userId);
+		Optional<User> optionalCurrentUser = userRepository.findByEmail(userDetails.getUsername());
+		if(optionalCurrentUser.isEmpty())
+			{
+				throw new UsernameNotFoundException("logged in user not found");
+			}
+		User loggedInUser = optionalCurrentUser.get();
+        boolean isOwner=loggedInUser.getUserId()==userId;
+		boolean isAdmin=loggedInUser.getRole().equals("ROLE_ADMIN");
 
-		ApiResponse<User> apiResponse = new ApiResponse<>();
+		if(isOwner || isAdmin) {
 
-		if (optional.isPresent()) {
 
-			User user = optional.get();
+			Optional<User> optional = userRepository.findById(userId);
 
-			apiResponse.setData(user);
-			apiResponse.setMessage("User Found Successfully");
-			apiResponse.setStatusCode(HttpStatus.OK.value());
+			ApiResponse<User> apiResponse = new ApiResponse<>();
 
-			return new ResponseEntity<ApiResponse<User>>(apiResponse, HttpStatus.OK);
+			if (optional.isPresent()) {
+
+
+				User user = optional.get();
+
+
+				apiResponse.setData(user);
+				apiResponse.setMessage("User Found Successfully");
+				apiResponse.setStatusCode(HttpStatus.OK.value());
+
+				return new ResponseEntity<ApiResponse<User>>(apiResponse, HttpStatus.OK);
+			} else {
+
+				throw new UserIdNotFoundException("Invalid User Id");
+			}
+		}
+		else{
+			throw new AccessDeniedException("You can only access your own data ");
 		}
 
-		else {
-
-			throw new UserIdNotFoundException("Invalid User Id");
-		}
 	}
 
 	@Override
@@ -152,7 +171,7 @@ public class UserService implements IUserService, UserDetailsService {
 			user.setUserName(userDto.getUserName());
 			
 			}
-			
+
 			if(userDto.getEmail()!=null) {
 				
 				user.setEmail(userDto.getEmail());

@@ -4,6 +4,8 @@ import com.lms.dto.LoginRequestDto;
 import com.lms.dto.LoginResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -37,9 +39,9 @@ public class UserController {
 
 		@GetMapping("/{userId}")
 		public ResponseEntity<ApiResponse<User>> findUserById(
-				@PathVariable int userId) {
+				@PathVariable int userId, @AuthenticationPrincipal UserDetails userDetails) {
 
-			return userService.findUserById(userId);
+			return userService.findUserById(userId,userDetails);
 		}
 
 		@PutMapping
