@@ -46,44 +46,50 @@ public class UserController {
 
 		@PutMapping
 		public ResponseEntity<ApiResponse<User>> updateUser(
-				@RequestBody UserDto userDto) {
+				@RequestBody UserDto userDto,
+				@AuthenticationPrincipal UserDetails userDetails) {
 
-			return userService.updateUserComplete(userDto);
+			return userService.updateUserComplete(userDto,userDetails);
 		}
 		
 		@PatchMapping("/{userId}")
 		public ResponseEntity<ApiResponse<User>> updateUserPartially(
-				@RequestBody UserDto userDto,@PathVariable int userId) {
+				@RequestBody UserDto userDto,
+				@PathVariable int userId,
+				@AuthenticationPrincipal UserDetails userDetails) {
 
-			return userService.updateUserPartially(userDto,userId);
+			return userService.updateUserPartially(userDto,userId,userDetails);
 		}
 
 		@DeleteMapping("/{userId}")
 		public ResponseEntity<ApiResponse<User>> deleteUserById(
-				@PathVariable int userId) {
+				@PathVariable int userId,@AuthenticationPrincipal UserDetails userDetails) {
 
-			return userService.deleteUserById(userId);
+			return userService.deleteUserById(userId,userDetails);
 		}
 
 		@GetMapping("/fetchAll")
-		public ResponseEntity<ApiResponse<List<User>>> findAllUser() {
+		public ResponseEntity<ApiResponse<List<User>>> findAllUser(@AuthenticationPrincipal UserDetails userDetails) {
 
-			return userService.findAllUser();
+			return userService.findAllUser(userDetails);
 		}
 		
 
 		@PutMapping("/borrow/{userId}/{bookId}")
-		public ResponseEntity<ApiResponse<User>> borrowBook(@PathVariable int userId,@PathVariable int bookId) {
+		public ResponseEntity<ApiResponse<User>> borrowBook(@PathVariable int userId,
+															@PathVariable int bookId,
+															@AuthenticationPrincipal UserDetails userDetails) {
 
-			return userService.borrowBookByUser(userId, bookId);
+			return userService.borrowBookByUser(userId, bookId,userDetails);
 		}
 		
 
 
 		@PutMapping("/return/{bookId}")
-		public ResponseEntity<ApiResponse<User>> returnBook(@PathVariable int bookId) {
+		public ResponseEntity<ApiResponse<User>> returnBook(@PathVariable int bookId,
+															@AuthenticationPrincipal UserDetails userDetails) {
 
-			return userService.returnBook(bookId);
+			return userService.returnBook(bookId,userDetails);
 		}
 
 		@PostMapping("/login")

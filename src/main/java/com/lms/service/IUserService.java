@@ -13,12 +13,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 public interface IUserService {
 	public ResponseEntity<ApiResponse<User>> registerUser(UserDto userDto,int addressId);
 	public ResponseEntity<ApiResponse<User>> findUserById(int userId, UserDetails userDetails);
-	public ResponseEntity<ApiResponse<User>>updateUserComplete(UserDto userDto);
-	public ResponseEntity<ApiResponse<User>>updateUserPartially(UserDto userDto,int userId);
-	public ResponseEntity<ApiResponse<User>>deleteUserById(int userId);
-	public ResponseEntity<ApiResponse<List<User>>> findAllUser();
-	public ResponseEntity<ApiResponse<User>> borrowBookByUser(int userId,int bookId);
-	public ResponseEntity<ApiResponse<User>> returnBook(int bookId);
+	public ResponseEntity<ApiResponse<User>>updateUserComplete(UserDto userDto,UserDetails userDetails);
+	public ResponseEntity<ApiResponse<User>>updateUserPartially(UserDto userDto,int userId,UserDetails userDetails);
+	public ResponseEntity<ApiResponse<User>>deleteUserById(int userId,UserDetails userDetails);
+	public ResponseEntity<ApiResponse<List<User>>> findAllUser(UserDetails userDetails);
+	public ResponseEntity<ApiResponse<User>> borrowBookByUser(int userId,int bookId,UserDetails userDetails);
+	public ResponseEntity<ApiResponse<User>> returnBook(int bookId,UserDetails userDetails);
     public ResponseEntity<ApiResponse<LoginResponseDto>> login(LoginRequestDto loginRequestDto);
 
 	
