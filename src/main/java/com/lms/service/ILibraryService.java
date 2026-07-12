@@ -20,6 +20,8 @@ public interface ILibraryService  {
 	public ResponseEntity<ApiResponse<List<Library>>> findAllLibrary();
 	public ResponseEntity<ApiResponse<Library>> addBookToLibrary(int libraryId, int bookId);
 	public ResponseEntity<ApiResponse<List<Book>>> displayBookFromLibrary(int libraryId);
+	public ResponseEntity<ApiResponse<Library>> removeBookFromLibrary(int libraryId,int bookId);
+
 	
 	
 }

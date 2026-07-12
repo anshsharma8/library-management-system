@@ -38,6 +38,21 @@ public class SecurityConfig {
                      .authorizeHttpRequests(auth-> auth
                              .requestMatchers(HttpMethod.POST,"/user/**").permitAll()
                              .requestMatchers(HttpMethod.POST,"/address").permitAll()
+
+                             //books
+                             .requestMatchers(HttpMethod.GET,"/book/**").authenticated()
+                             .requestMatchers(HttpMethod.POST,"/book/**").hasRole("ADMIN")
+                             .requestMatchers(HttpMethod.PUT, "/book/**").hasRole("ADMIN")
+                             .requestMatchers(HttpMethod.PATCH, "/book/**").hasRole("ADMIN")
+                             .requestMatchers(HttpMethod.DELETE, "/book/**").hasRole("ADMIN")
+
+                             //library
+                             .requestMatchers(HttpMethod.GET, "/library/**").authenticated()
+                             .requestMatchers(HttpMethod.POST, "/library/**").hasRole("ADMIN")
+                             .requestMatchers(HttpMethod.PUT, "/library/**").hasRole("ADMIN")
+                             .requestMatchers(HttpMethod.PATCH, "/library/**").hasRole("ADMIN")
+                             .requestMatchers(HttpMethod.DELETE, "/library/**").hasRole("ADMIN")
+
                              .anyRequest()
                              .authenticated())
                      .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

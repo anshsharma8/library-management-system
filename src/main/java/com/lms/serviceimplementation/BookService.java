@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.lms.entity.Library;
+import com.lms.exception.BookUnableToBorrowException;
+import com.lms.repository.LibraryRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +30,9 @@ public class BookService implements IBookService{
 	
 	@Autowired
 	BookRepository bookRepository;
+
+	@Autowired
+	LibraryRepository libraryRepository;
 	
 	
 	@Override
@@ -118,6 +124,30 @@ public class BookService implements IBookService{
 
 	@Override
 	public ResponseEntity<ApiResponse<Book>> deleteBookById(int bookId) {
+
+		Optional<Book> optionalBookById = bookRepository.findById(bookId);
+		if(optionalBookById.isEmpty())
+		{
+			throw new BookIdNotFoundException("book for this id not found");
+		}
+		Book book = optionalBookById.get();
+		if(book.isBorrowed())
+		{
+			throw new BookUnableToBorrowException("cannot delete this book as book is borrowed");
+		}
+
+		List<Library> allLibraries = libraryRepository.findAll();
+		// find any library that has this book in its list, and remove it
+		for(Library library:allLibraries)
+		{
+			if(library.getBookList()!=null && library.getBookList().contains(book))
+			{
+				library.getBookList().remove(book);
+				libraryRepository.save(library); // updates the join table, removes the link
+			}
+		}
+
+
 		bookRepository.deleteById(bookId);
 		ApiResponse<Book> apiResponse = new ApiResponse<>();
 		apiResponse.setData(null);

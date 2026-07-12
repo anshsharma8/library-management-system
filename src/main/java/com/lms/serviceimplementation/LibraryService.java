@@ -1,5 +1,6 @@
 package com.lms.serviceimplementation;
 
+import com.lms.exception.BookIdNotFoundException;
 import com.lms.repository.BookRepository;
 
 import java.util.ArrayList;
@@ -142,6 +143,21 @@ public class LibraryService implements ILibraryService{
 
 	@Override
 	public ResponseEntity<ApiResponse<Library>> deleteLibraryById(int libraryId) {
+
+		Optional<Library> optionalLibraryById = libraryRepository.findById(libraryId);
+		if(optionalLibraryById.isEmpty())
+		{
+		  throw new LibraryIdNotFoundException("Library for this id not found");
+		}
+
+		Library library = optionalLibraryById.get();
+
+		if (library.getBookList() != null && !library.getBookList().isEmpty()) {
+			throw new IllegalStateException(
+					"Cannot delete this library — it still has books assigned. Remove or reassign them first.");
+		}
+
+
 		libraryRepository.deleteById(libraryId);
 		ApiResponse<Library> apiResponse = new ApiResponse<>();
 		apiResponse.setData(null);
@@ -222,8 +238,41 @@ public class LibraryService implements ILibraryService{
 	 
 	}
 
-	
-		
+	@Override
+	public ResponseEntity<ApiResponse<Library>> removeBookFromLibrary(int libraryId, int bookId) {
+
+		Optional<Library> optionalLibraryById = libraryRepository.findById(libraryId);
+		Optional<Book> optionalBookById = bookRepository.findById(bookId);
+
+		if(optionalBookById.isEmpty())
+		{
+			throw new BookIdNotFoundException("book for id not found");
+		}
+		if(optionalLibraryById.isEmpty())
+		{
+			throw new LibraryIdNotFoundException("Library for this id not found");
+		}
+		Book book = optionalBookById.get();
+		Library library = optionalLibraryById.get();
+
+		List<Book> bookList = library.getBookList();
+		if(bookList !=null && bookList.contains(book))
+		{
+			bookList.remove(book);
+			libraryRepository.save(library);
+		}
+		else{
+			throw new BookIdNotFoundException("Book for this id not found in library");
+		}
+
+		ApiResponse<Library> apiResponse=new ApiResponse();
+		apiResponse.setData(null);
+		apiResponse.setMessage("Books removed Successfully");
+		apiResponse.setStatusCode(HttpStatus.OK.value());
+		return new ResponseEntity<ApiResponse<Library>>(apiResponse,HttpStatus.OK);
 	}
+
+
+}
 	
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -35,7 +36,12 @@ public class LibraryController {
 	{
 		return libraryService.saveLibrary(libraryDto,addressId);
 	}
-	
+
+	@PutMapping("/removeBook/{libraryId/{bookId}}")
+	public ResponseEntity<ApiResponse<Library>> removeBookFromLibrary(@PathVariable int libraryId, @PathVariable int bookId )
+	{
+		return libraryService.removeBookFromLibrary(libraryId,bookId);
+	}	
 
 	@GetMapping("{libraryId}")
 	public ResponseEntity<ApiResponse<Library>> findLibraryById(@PathVariable int libraryId)
