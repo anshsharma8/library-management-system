@@ -37,7 +37,7 @@ public class LibraryController {
 		return libraryService.saveLibrary(libraryDto,addressId);
 	}
 
-	@PutMapping("/removeBook/{libraryId}/{bookId}}")
+	@PutMapping("/removeBook/{libraryId}/{bookId}")
 	public ResponseEntity<ApiResponse<Library>> removeBookFromLibrary(@PathVariable int libraryId, @PathVariable int bookId )
 	{
 		return libraryService.removeBookFromLibrary(libraryId,bookId);
