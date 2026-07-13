@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -385,6 +386,11 @@ public class UserService implements IUserService, UserDetailsService {
     @Override
     public ResponseEntity<ApiResponse<LoginResponseDto>> login(LoginRequestDto loginRequestDto) {
 
+        if(loginRequestDto.getPassword()==null || loginRequestDto.getPassword().isEmpty())
+        {
+            throw new BadCredentialsException("Password is required");
+        }
+
         // Step 1 — verify credentials
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequestDto.getEmail(), loginRequestDto.getPassword()));
 
@@ -420,6 +426,10 @@ public class UserService implements IUserService, UserDetailsService {
 
         String username = userByEmail.getEmail();
         String password = userByEmail.getPassword();
+        if(password==null)
+        {
+            password="";
+        }
         String role = userByEmail.getRole();
 
 

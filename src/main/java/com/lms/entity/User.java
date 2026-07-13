@@ -31,4 +31,6 @@ public class User {
 	private String role;
 	@OneToOne
 	private Address address;
+	// "LOCAL" for username/password signups, "GOOGLE" for OAuth2 signups
+	private String provider = "LOCAL";
 }

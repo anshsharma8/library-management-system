@@ -2,6 +2,7 @@ package com.lms.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,14 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
-    private static final String SECRET = "iAmAnshulSharmaAndThisIsMySecretKeyForJWT";
+
+    private String SECRET;
+   public JwtUtil(@Value("${jwt.secret}") String SECRET)
+   {
+       this.SECRET=SECRET;
+   }
+
+
     private static final long EXPIRATION = 1000 * 60 * 60 * 10;
 
     private SecretKey getSigningKey() {

@@ -1,6 +1,7 @@
 package com.lms.security;
 
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +28,9 @@ public class SecurityConfig {
     @Autowired
     AuthenticationConfiguration authenticationConfiguration;
 
+    @Autowired
+     OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -52,9 +56,15 @@ public class SecurityConfig {
                              .requestMatchers(HttpMethod.PUT, "/library/**").hasRole("ADMIN")
                              .requestMatchers(HttpMethod.PATCH, "/library/**").hasRole("ADMIN")
                              .requestMatchers(HttpMethod.DELETE, "/library/**").hasRole("ADMIN")
+                             .requestMatchers("/oauth2/**","/login/oauth2/**").permitAll()
 
                              .anyRequest()
                              .authenticated())
+                     .exceptionHandling(ex -> ex
+                             .authenticationEntryPoint((request, response, authException) ->
+                                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")))
+                     .oauth2Login(auth->auth.successHandler(oAuth2LoginSuccessHandler))
+
                      .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
