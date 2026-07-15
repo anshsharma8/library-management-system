@@ -16,6 +16,8 @@ public interface BookRepository extends JpaRepository<Book,Integer>{
 
 	List<Book> findByTitle(String title);
 	List<Book> findByAuthorAndTitle(String author,String title);
-	
+
+	//Book WHERE book.user.userId = ?
+	List<Book> findByUser_UserId(int userId);
 	
 }

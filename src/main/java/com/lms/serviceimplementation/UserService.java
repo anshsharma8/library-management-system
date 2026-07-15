@@ -236,27 +236,49 @@ public class UserService implements IUserService, UserDetailsService {
     @Override
     public ResponseEntity<ApiResponse<User>> deleteUserById(int userId, UserDetails userDetails) {
 
+        Optional<User> optionalUserById = userRepository.findById(userId);
+        if(optionalUserById.isEmpty())
+        {
+            throw new UserIdNotFoundException("user for this id not found");
+        }
+        User userById = optionalUserById.get();
+
+
         Optional<User> optionalCurrentUser = userRepository.findByEmail(userDetails.getUsername());
         if (optionalCurrentUser.isEmpty()) {
-            throw new UsernameNotFoundException("logged in user now found");
+            throw new UsernameNotFoundException("logged in user not found");
         }
         User loggedInUser = optionalCurrentUser.get();
 
         boolean isOwner = loggedInUser.getUserId() == userId;
         boolean isAdmin = loggedInUser.getRole().equals("ROLE_ADMIN");
 
-        if (isOwner || isAdmin) {
+        List<Book> borrowedBooks = bookRepository.findByUser_UserId(userId);
 
 
-            userRepository.deleteById(userId);
+        if (isOwner || isAdmin  ) {
 
-            ApiResponse<User> apiResponse = new ApiResponse<>();
+            if(borrowedBooks.isEmpty()) {
 
-            apiResponse.setData(null);
-            apiResponse.setMessage("User deleted");
-            apiResponse.setStatusCode(HttpStatus.OK.value());
 
-            return new ResponseEntity<ApiResponse<User>>(apiResponse, HttpStatus.OK);
+                userRepository.deleteById(userId);
+
+                ApiResponse<User> apiResponse = new ApiResponse<>();
+
+                apiResponse.setData(null);
+                apiResponse.setMessage("User deleted");
+                apiResponse.setStatusCode(HttpStatus.OK.value());
+
+                return new ResponseEntity<ApiResponse<User>>(apiResponse, HttpStatus.OK);
+            }
+            else{
+                ApiResponse<User> apiResponse = new ApiResponse<>();
+                apiResponse.setData(null);
+                apiResponse.setMessage("Cannot delete user as they have " + borrowedBooks.size() + " borrowed book(s). Please return all books first.");
+                apiResponse.setStatusCode(HttpStatus.CONFLICT.value());
+
+                return new ResponseEntity<ApiResponse<User>>(apiResponse, HttpStatus.CONFLICT);
+            }
         } else {
             throw new AccessDeniedException("you can only delete your details");
         }
