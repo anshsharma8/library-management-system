@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.Pattern;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -27,6 +28,10 @@ public class User {
 	private long phoneNumber;
 	private String email;
 	@JsonIgnore
+	@Pattern(
+			regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
+			message = "Password must be at least 8 characters long and contain an uppercase letter, lowercase letter, digit, and special character."
+	)
 	private String password;
 	private String role;
 	@OneToOne
