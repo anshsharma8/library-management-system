@@ -16,7 +16,7 @@ public class JwtUtil {
 
 
     private String SECRET;
-   public JwtUtil(@Value("${jwt.secret}") String SECRET)
+   public JwtUtil(@Value("${JWT_SECRET}") String SECRET)
    {
        this.SECRET=SECRET;
    }
