@@ -40,6 +40,7 @@ public class SecurityConfig {
                      .cors(Customizer.withDefaults())
 
                      .authorizeHttpRequests(auth-> auth
+                             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                              .requestMatchers(HttpMethod.POST,"/user/**").permitAll()
                              .requestMatchers(HttpMethod.POST,"/address").permitAll()
 
@@ -82,7 +83,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",
-                "https://library-management-frontend-pi-rouge.vercel.app/login"
+                "https://library-management-frontend-pi-rouge.vercel.app"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
