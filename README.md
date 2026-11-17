@@ -2,7 +2,7 @@
 
 A backend project for managing libraries, books and users. Admins manage books and libraries. Users can register, log in, and borrow or return books.
 
-**Frontend repo:** (add your frontend GitHub link here)
+**Frontend repo:** https://github.com/anshsharma8/library-management-frontend
 
 ## Features
 
